@@ -7,21 +7,26 @@ class File:
 	var filename : String # Name of the file
 	var secret : String # Secret key used for encryption
 	var _encryption : bool # Flag if encryption is set
+	var _debug : bool
 	
 	
 	# Constructor for the File class
 	# @param path: The path where the file is located or will be created
 	# @param open_file: The name of the file to open or create
 	# @param secretkey: The encryption key for securing the file, if empty not encryption will set
-	func _init(path: String, open_file: String, secretkey: String="") -> void:
+	func _init(path: String, open_file: String, secretkey: String="", debug:bool = false) -> void:
 		self.path = path
 		self.filename = open_file
+		self._debug = debug
 		if secretkey == "":
-			self._encryption == false
+			self._encryption = false
 			self.secret = secretkey
 		else:
-			self._encryption == true
+			self._encryption = true
 			self.secret = secretkey
+		if self._debug == true:
+			print("Encryption: " + str(self._encryption))
+			print("Secret Key: " + str(self.secret))
 		if FileAccess.file_exists(self.path + self.filename):
 			self.load_file()
 		else:
@@ -38,17 +43,21 @@ class File:
 			file = FileAccess.open(self.path + self.filename, FileAccess.READ)
 		var json : Object = JSON.new()
 		var error = json.parse(file.get_as_text())
-		print(file.get_as_text())
+		if self._debug == true:
+			print(file.get_as_text())
 		if error == OK:
 			var data_received = json.data
 			# Check if the data type is correct (Dictionary)
 			if typeof(data_received) == TYPE_DICTIONARY:
-				print(data_received) # Prints array
+				if self._debug == true:
+					print(data_received) # Prints array
 			else:
-				print("Unexpected data")
+				if self._debug == true:
+					print("Unexpected data")
 		else:
 			# Handle JSON parsing errors
-			print("JSON Parse Error: ", json.get_error_message(), " in ", file.get_as_text(), " at line ", json.get_error_line())
+			if self._debug == true:
+				print("JSON Parse Error: ", json.get_error_message(), " in ", file.get_as_text(), " at line ", json.get_error_line())
 		self._data = json.data
 		file.close()
 		return
@@ -63,14 +72,19 @@ class File:
 			file = FileAccess.open(self.path + self.filename, FileAccess.WRITE)
 		file.store_string(JSON.stringify(init_dict))
 		file.close()
+		if self._debug == true:
+			print("Created file with the Name: " + str(filename))
 		return
 		
 	# Retrieves the data from the file, with a specific key
 	# @param key: The specific key to retrieve data for
 	func get_data(key: String = ""):
-		if _data.has(key):
+		if _data.has(key):			
 			return self._data[key]
 		else:
+			if self._debug == true:
+				print("Key not found: " + str(key))
+				print(_data)
 			return false
 	
 	# Sets the data in the file dictionary and writes it to the file
