@@ -29,7 +29,7 @@ var file = GStorage.File.set_data(dict)
 ```
 
 - **dict**: i.e. {"device_id": 1, ...}
-- **return**: null
+- **return**: void
 
 
 If you want to change a single value without passing a dictionary:
@@ -40,6 +40,15 @@ var file = GStorage.File.set_key(key, value)
 - **key**: i.e. "device_id"
 - **value**: i.e. 1
 - **return**: value
+
+
+If you want to get a single value with a specific key:
+```gdscript
+var file = GStorage.File.get_data(key)
+```
+
+- **key**: i.e. "device_id"
+- **return**: value or false
 
 If you want to have all data as a dictionary:
 ```gdscript
@@ -54,4 +63,4 @@ If you want to delete a key:
 var file = GStorage.File.delete_data()
 ```
 
-- **return**: null
+- **return**: void
